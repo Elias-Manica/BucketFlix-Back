@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model comments {
+  id        Int       @id @default(autoincrement())
+  userid    Int
+  movieid   Int
+  comment   String    @db.VarChar(250)
+  rating    Int
+  createdat DateTime? @default(now()) @db.Date
+  updatedat DateTime? @default(now()) @db.Date
+  movies    movies    @relation(fields: [movieid], references: [movieid], onDelete: NoAction, onUpdate: NoAction)
+  users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model listmovies {
+  id        Int       @id @default(autoincrement())
+  userid    Int
+  movieid   Int
+  createdat DateTime? @default(now()) @db.Date
+  updatedat DateTime? @default(now()) @db.Date
+  movies    movies    @relation(fields: [movieid], references: [movieid], onDelete: NoAction, onUpdate: NoAction)
+  users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model movies {
+  id         Int          @id @default(autoincrement())
+  movieid    Int          @unique
+  comments   comments[]
+  listmovies listmovies[]
+}
+
+model session {
+  id        Int       @id @default(autoincrement())
+  userid    Int
+  token     String
+  createdat DateTime? @default(now()) @db.Date
+  updatedat DateTime? @default(now()) @db.Date
+  users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
+  createdat  DateTime?    @default(now()) @db.Date
+  updatedat  DateTime?    @default(now()) @db.Date
+  comments   comments[]
+  listmovies listmovies[]
+  session    session[]
+}
