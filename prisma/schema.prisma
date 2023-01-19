@@ -48,6 +48,8 @@ model session {
 model users {
   id         Int          @id @default(autoincrement())
   email      String       @unique
+  username   String
+  pictureUrl String
   createdat  DateTime?    @default(now()) @db.Date
   updatedat  DateTime?    @default(now()) @db.Date
   comments   comments[]

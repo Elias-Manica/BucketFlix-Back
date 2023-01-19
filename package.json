@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon src/app.ts",
+    "dev": "npx nodemon src/app.ts",
+    "dev: migrate": "npx prisma migrate dev",
     "test: watch": "npx dotenv -e .env.test npx jest",
-    "migration:run": "prisma migrate deploy",
-    "migration:generate": "npm run dev:load-envs prisma migrate dev"
+    "test: migrate": "npx dotenv -e .env.test npx prisma migrate dev --name bucketflixtest postgres-init"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +26,7 @@
     "@types/pg": "^8.6.6",
     "@types/supertest": "^2.0.12",
     "dotenv-cli": "^7.0.0",
+    "http-status": "^1.6.2",
     "jest": "^29.3.1",
     "prisma": "^4.9.0",
     "supertest": "^6.3.3",
