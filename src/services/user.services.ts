@@ -2,7 +2,7 @@ import { users } from "@prisma/client";
 
 import userRepository from "../repositories/users.repository";
 
-export async function createUser(
+async function createUser(
   email: string,
   username: string,
   pictureUrl: string
@@ -10,10 +10,15 @@ export async function createUser(
   return userRepository.create(email, username, pictureUrl);
 }
 
+async function findUserByEmail(email: string) {
+  return userRepository.hasUserWithEmail(email);
+}
+
 export type createUserParams = Pick<users, "email" | "username" | "pictureUrl">;
 
 const userService = {
   createUser,
+  findUserByEmail,
 };
 
 export default userService;

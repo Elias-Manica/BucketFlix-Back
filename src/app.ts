@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import { userRouter } from "./router/users.router";
+import { sessionRouter } from "./router/session.router";
 import { connectDb } from "./database/database";
 
 const server = express();
@@ -16,7 +17,8 @@ server
   .get("/status", async (req, res) => {
     res.sendStatus(201);
   })
-  .use("/sign-up", userRouter);
+  .use("/sign-up", userRouter)
+  .use("/sign-in", sessionRouter);
 
 export function init(): Promise<Express> {
   connectDb();
