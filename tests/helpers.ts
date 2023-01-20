@@ -1,4 +1,4 @@
-import prisma from "../src/database/database";
+import { prisma } from "../src/database/database";
 
 export async function cleanDb() {
   await prisma.listmovies.deleteMany({});

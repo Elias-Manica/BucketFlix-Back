@@ -1,10 +1,11 @@
 import supertest from "supertest";
-import server from "../../src/app";
+import server, { init } from "../../src/app";
 import { cleanDb } from "../helpers";
 
 const api = supertest(server);
 
-beforeEach(async () => {
+beforeAll(async () => {
+  await init();
   await cleanDb();
 });
 

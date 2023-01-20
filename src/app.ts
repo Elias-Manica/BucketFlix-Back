@@ -1,8 +1,9 @@
-import express from "express";
+import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
 import { userRouter } from "./router/users.router";
+import { connectDb } from "./database/database";
 
 const server = express();
 
@@ -17,8 +18,9 @@ server
   })
   .use("/sign-up", userRouter);
 
-server.listen(process.env.PORT, () => {
-  console.log(`Server listen on port ${process.env.PORT}`);
-});
+export function init(): Promise<Express> {
+  connectDb();
+  return Promise.resolve(server);
+}
 
 export default server;
