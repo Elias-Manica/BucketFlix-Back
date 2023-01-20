@@ -1,9 +1,9 @@
-import express from "express";
+import express, { Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import connection from "./database/database.js";
-import { getMovies } from "./repositories/listMovies-repositorie.js";
+import { userRouter } from "./router/users.router";
+import { connectDb } from "./database/database";
 
 const server = express();
 
@@ -12,11 +12,15 @@ server.use(express.json());
 
 dotenv.config();
 
-server.get("/status", async (req, res) => {
-  const response = await getMovies();
-  res.status(201).send(response);
-});
+server
+  .get("/status", async (req, res) => {
+    res.sendStatus(201);
+  })
+  .use("/sign-up", userRouter);
 
-server.listen(process.env.PORT, () => {
-  console.log(`Server listen on port ${process.env.PORT}`);
-});
+export function init(): Promise<Express> {
+  connectDb();
+  return Promise.resolve(server);
+}
+
+export default server;
