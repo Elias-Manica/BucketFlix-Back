@@ -10,8 +10,17 @@ async function create(email: string, username: string, pictureUrl: string) {
   });
 }
 
+async function hasUserWithEmail(email: string) {
+  return prisma.users.findFirst({
+    where: {
+      email,
+    },
+  });
+}
+
 const userRepository = {
   create,
+  hasUserWithEmail,
 };
 
 export default userRepository;

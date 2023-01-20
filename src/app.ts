@@ -15,7 +15,7 @@ server
   .get("/status", async (req, res) => {
     res.sendStatus(201);
   })
-  .use("/sign-in", userRouter);
+  .use("/sign-up", userRouter);
 
 server.listen(process.env.PORT, () => {
   console.log(`Server listen on port ${process.env.PORT}`);

@@ -15,6 +15,8 @@ export async function usersPost(req: Request, res: Response) {
     });
   } catch (error) {
     console.log(error);
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
   }
 }
