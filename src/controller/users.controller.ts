@@ -12,9 +12,10 @@ export async function usersPost(req: Request, res: Response) {
     return res.status(httpStatus.CREATED).json({
       id: user.id,
       email: user.email,
+      username: user.username,
+      pictureUrl: user.pictureUrl,
     });
   } catch (error) {
-    console.log(error);
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .send({ msg: "Erro interno no servidor" });

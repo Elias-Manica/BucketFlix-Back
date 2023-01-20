@@ -19,21 +19,16 @@ async function signUpIsValid(req: Request, res: Response, next: NextFunction) {
 }
 
 async function hadEmailUnique(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { email } = req.body;
+  const { email } = req.body;
 
-    const response = await userRepository.hasUserWithEmail(email);
+  const response = await userRepository.hasUserWithEmail(email);
 
-    if (response) {
-      res.status(httpStatus.CONFLICT).send({ msg: "E-mail já registrado" });
-      return;
-    }
-
-    next();
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ msg: "Erro interno no servidor" });
+  if (response) {
+    res.status(httpStatus.CONFLICT).send({ msg: "E-mail já registrado" });
+    return;
   }
+
+  next();
 }
 
 export { signUpIsValid, hadEmailUnique };
