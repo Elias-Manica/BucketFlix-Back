@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 
 import { userRouter } from "./router/users.router";
 import { sessionRouter } from "./router/session.router";
+import { moviesRouter } from "./router/movies.router";
+
 import { connectDb } from "./database/database";
 
 const server = express();
@@ -18,7 +20,8 @@ server
     res.sendStatus(201);
   })
   .use("/sign-up", userRouter)
-  .use("/sign-in", sessionRouter);
+  .use("/sign-in", sessionRouter)
+  .use("/add-movie", moviesRouter);
 
 export function init(): Promise<Express> {
   connectDb();
