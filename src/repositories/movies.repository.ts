@@ -18,9 +18,9 @@ async function findBasedOnId(movieid: number) {
   });
 }
 
-async function movieIdIsInApi(movieid: number) {
+async function movieIdIsInApi(movieid: number, apiKey: string) {
   const response = await axios.get(
-    `https://api.themoviedb.org/3/movie/${movieid}?api_key=${process.env.API_KEY}&language=pt-BR`
+    `https://api.themoviedb.org/3/movie/${movieid}?api_key=${apiKey}&language=pt-BR`
   );
   return response.data;
 }

@@ -13,7 +13,7 @@ export async function addMovieInBd(req: Request, res: Response) {
     return res.status(httpStatus.CREATED).send(movie);
   } catch (error) {
     console.log(error);
-    if (error === 401) {
+    if (error.response?.status === 401) {
       return res.status(httpStatus.UNAUTHORIZED).send({
         msg: "Api key enviada inválida, você pode criar uma em The Movie Database (TMDB) API",
       });
