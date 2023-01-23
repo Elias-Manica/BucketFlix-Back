@@ -9,6 +9,6 @@ const moviesRouter = Router();
 
 moviesRouter
   .post("/", tokenIsValid, bodyAddMovieIsValid, addMovieInBd)
-  .post("/favorite", tokenIsValid, favoriteMovie);
+  .post("/favorite", tokenIsValid, bodyAddMovieIsValid, favoriteMovie);
 
 export { moviesRouter };

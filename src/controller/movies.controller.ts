@@ -30,11 +30,11 @@ export async function addMovieInBd(req: Request, res: Response) {
 
 export async function favoriteMovie(req: Request, res: Response) {
   const userId = res.locals.userid;
-  console.log(userId);
 
-  const { movieid } = req.body;
+  const { movieid, apiKey } = req.body;
 
   try {
+    await moviesService.favorite(movieid, userId, apiKey);
     return res
       .status(httpStatus.CREATED)
       .send({ msg: "Filme adicionado aos favoritos" });
@@ -48,6 +48,11 @@ export async function favoriteMovie(req: Request, res: Response) {
       return res
         .status(httpStatus.NOT_FOUND)
         .send({ msg: "Este filme não foi encontrado no banco de dados" });
+    }
+    if (error.response?.status === 409 || error === 409) {
+      return res
+        .status(httpStatus.CONFLICT)
+        .send({ msg: "Você já curtiu esse filme" });
     }
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)

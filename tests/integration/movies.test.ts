@@ -131,6 +131,14 @@ describe("POST /add-movie", () => {
         expect(response.body).toEqual({
           id: expect.any(Number),
           movieid: body.movieid,
+          original_title: "Fight Club",
+          title: "Clube da Luta",
+          overview:
+            "Um homem deprimido que sofre de insônia conhece um estranho vendedor de sabonetes chamado Tyler Durden. Eles formam um clube clandestino com regras rígidas onde lutam com outros homens cansados de suas vidas mundanas. Mas sua parceria perfeita é comprometida quando Marla chama a atenção de Tyler.",
+          poster_path: "/r3pPehX4ik8NLYPpbDRAh0YRtMb.jpg",
+          tagline: "Má conduta. Caos. Sabão.",
+          popularity: 89.37,
+          release_date: "1999-10-15",
         });
       });
 
@@ -149,8 +157,16 @@ describe("POST /add-movie", () => {
         });
         expect(movie).toEqual(
           expect.objectContaining({
-            id: response.body.id,
+            id: expect.any(Number),
             movieid: body.movieid,
+            original_title: "Fight Club",
+            title: "Clube da Luta",
+            overview:
+              "Um homem deprimido que sofre de insônia conhece um estranho vendedor de sabonetes chamado Tyler Durden. Eles formam um clube clandestino com regras rígidas onde lutam com outros homens cansados de suas vidas mundanas. Mas sua parceria perfeita é comprometida quando Marla chama a atenção de Tyler.",
+            poster_path: "/r3pPehX4ik8NLYPpbDRAh0YRtMb.jpg",
+            tagline: "Má conduta. Caos. Sabão.",
+            popularity: 89.37,
+            release_date: "1999-10-15",
           })
         );
       });

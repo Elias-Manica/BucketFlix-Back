@@ -34,6 +34,24 @@ async function findBasedOnId(movieid: number) {
   });
 }
 
+async function addToFavoritList(movieid: number, userid: number) {
+  return prisma.listmovies.create({
+    data: {
+      movieid,
+      userid,
+    },
+  });
+}
+
+async function movieIsFavorited(movieid: number, userid: number) {
+  return prisma.listmovies.findFirst({
+    where: {
+      movieid,
+      userid,
+    },
+  });
+}
+
 async function movieIdIsInApi(movieid: number, apiKey: string) {
   const response = await axios.get(
     `https://api.themoviedb.org/3/movie/${movieid}?api_key=${apiKey}&language=pt-BR`
@@ -45,6 +63,8 @@ const moviesRepository = {
   create,
   findBasedOnId,
   movieIdIsInApi,
+  addToFavoritList,
+  movieIsFavorited,
 };
 
 export default moviesRepository;
