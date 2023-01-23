@@ -2,10 +2,26 @@ import { prisma } from "../database/database";
 
 import axios from "axios";
 
-async function create(movieid: number) {
+async function create(
+  movieid: number,
+  original_title: string,
+  title: string,
+  overview: string,
+  poster_path: string,
+  tagline: string,
+  popularity: number,
+  release_date: string
+) {
   return prisma.movies.create({
     data: {
       movieid,
+      original_title,
+      title,
+      overview,
+      poster_path,
+      tagline,
+      popularity,
+      release_date,
     },
   });
 }

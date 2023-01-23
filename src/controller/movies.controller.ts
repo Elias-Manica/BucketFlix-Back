@@ -27,3 +27,30 @@ export async function addMovieInBd(req: Request, res: Response) {
       .send({ msg: "Erro interno no servidor" });
   }
 }
+
+export async function favoriteMovie(req: Request, res: Response) {
+  const userId = res.locals.userid;
+  console.log(userId);
+
+  const { movieid } = req.body;
+
+  try {
+    return res
+      .status(httpStatus.CREATED)
+      .send({ msg: "Filme adicionado aos favoritos" });
+  } catch (error) {
+    if (error.response?.status === 401) {
+      return res.status(httpStatus.UNAUTHORIZED).send({
+        msg: "Api key enviada inválida, você pode criar uma em The Movie Database (TMDB) API",
+      });
+    }
+    if (error.response?.status === 404) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .send({ msg: "Este filme não foi encontrado no banco de dados" });
+    }
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
