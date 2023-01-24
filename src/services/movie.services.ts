@@ -67,9 +67,16 @@ async function hasMovieInExternalApi(movieid: number, apiKey: string) {
   return hasMovieInApi;
 }
 
+async function getMovies(userid: number) {
+  const listMovies = await moviesRepository.listMovies(userid);
+
+  return listMovies;
+}
+
 const moviesService = {
   addMovie,
   favorite,
+  getMovies,
 };
 
 export default moviesService;

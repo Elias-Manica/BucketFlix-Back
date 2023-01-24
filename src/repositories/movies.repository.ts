@@ -52,6 +52,17 @@ async function movieIsFavorited(movieid: number, userid: number) {
   });
 }
 
+async function listMovies(userid: number) {
+  return prisma.listmovies.findMany({
+    where: {
+      userid,
+    },
+    include: {
+      movies: true,
+    },
+  });
+}
+
 async function movieIdIsInApi(movieid: number, apiKey: string) {
   const response = await axios.get(
     `https://api.themoviedb.org/3/movie/${movieid}?api_key=${apiKey}&language=pt-BR`
@@ -65,6 +76,7 @@ const moviesRepository = {
   movieIdIsInApi,
   addToFavoritList,
   movieIsFavorited,
+  listMovies,
 };
 
 export default moviesRepository;

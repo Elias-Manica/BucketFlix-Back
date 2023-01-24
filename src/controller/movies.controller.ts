@@ -59,3 +59,16 @@ export async function favoriteMovie(req: Request, res: Response) {
       .send({ msg: "Erro interno no servidor" });
   }
 }
+
+export async function getFavoritesMovies(req: Request, res: Response) {
+  const userId = res.locals.userid;
+
+  try {
+    const listMovies = await moviesService.getMovies(userId);
+    return res.status(httpStatus.OK).send(listMovies);
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
