@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { userRouter } from "./router/users.router";
 import { sessionRouter } from "./router/session.router";
 import { moviesRouter } from "./router/movies.router";
+import { commentsRouter } from "./router/comments.router";
 
 import { connectDb } from "./database/database";
 
@@ -21,7 +22,8 @@ server
   })
   .use("/sign-up", userRouter)
   .use("/sign-in", sessionRouter)
-  .use("/add-movie", moviesRouter);
+  .use("/add-movie", moviesRouter)
+  .use("/comments", commentsRouter);
 
 export function init(): Promise<Express> {
   connectDb();

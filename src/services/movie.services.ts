@@ -77,6 +77,7 @@ const moviesService = {
   addMovie,
   favorite,
   getMovies,
+  hasMovieInExternalApi,
 };
 
 export default moviesService;
