@@ -36,7 +36,7 @@ export async function favoriteMovie(req: Request, res: Response) {
   try {
     await moviesService.favorite(movieid, userId, apiKey);
     return res
-      .status(httpStatus.CREATED)
+      .status(httpStatus.OK)
       .send({ msg: "Filme adicionado aos favoritos" });
   } catch (error) {
     if (error.response?.status === 401) {

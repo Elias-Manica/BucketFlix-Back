@@ -137,7 +137,7 @@ describe("POST /add-movie", () => {
             "Um homem deprimido que sofre de insônia conhece um estranho vendedor de sabonetes chamado Tyler Durden. Eles formam um clube clandestino com regras rígidas onde lutam com outros homens cansados de suas vidas mundanas. Mas sua parceria perfeita é comprometida quando Marla chama a atenção de Tyler.",
           poster_path: "/r3pPehX4ik8NLYPpbDRAh0YRtMb.jpg",
           tagline: "Má conduta. Caos. Sabão.",
-          popularity: 89.37,
+          popularity: expect.any(Number),
           release_date: "1999-10-15",
         });
       });
@@ -165,8 +165,163 @@ describe("POST /add-movie", () => {
               "Um homem deprimido que sofre de insônia conhece um estranho vendedor de sabonetes chamado Tyler Durden. Eles formam um clube clandestino com regras rígidas onde lutam com outros homens cansados de suas vidas mundanas. Mas sua parceria perfeita é comprometida quando Marla chama a atenção de Tyler.",
             poster_path: "/r3pPehX4ik8NLYPpbDRAh0YRtMb.jpg",
             tagline: "Má conduta. Caos. Sabão.",
-            popularity: 89.37,
+            popularity: expect.any(Number),
             release_date: "1999-10-15",
+          })
+        );
+      });
+    });
+  });
+});
+
+describe("POST /add-movie/favorite", () => {
+  const generateValidBody = () => ({
+    movieid: 550,
+    apiKey: "282f0a136717fde5f2065214b2d08a25",
+  });
+
+  const invalidBodyMovieID = () => ({
+    movieid: 55000000,
+    apiKey: "282f0a136717fde5f2065214b2d08a25",
+  });
+
+  const invalidBodyAPIKEY = () => ({
+    movieid: 550,
+    apiKey: "123",
+  });
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await api.post("/add-movie/favorite");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await api
+      .post("/add-movie/favorite")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+    const body = generateValidBody();
+    const token = jwt.sign(
+      { userId: userWithoutSession.id },
+      process.env.JWT_SECRET
+    );
+
+    const response = await api
+      .post("/add-movie/favorite")
+      .send(body)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("When token is valid", () => {
+    it("Should respond with status 422 when body is not given", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .post("/add-movie/favorite")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    });
+
+    it("Should respond with status 422 when body is not valid", async () => {
+      const invalidBody = { [faker.lorem.word()]: faker.lorem.word() };
+
+      const token = await generateValidToken();
+
+      const response = await api
+        .post("/add-movie/favorite")
+        .send(invalidBody)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.UNPROCESSABLE_ENTITY);
+    });
+
+    describe("When body is valid", () => {
+      it("should respond with status 404 when there is no movie in API movies with that movieid", async () => {
+        const body = invalidBodyMovieID();
+
+        const token = await generateValidToken();
+
+        const response = await api
+          .post("/add-movie/favorite")
+          .send(body)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.NOT_FOUND);
+      });
+
+      it("should respond with status 401 when the api key send is not valid", async () => {
+        const body = invalidBodyAPIKEY();
+
+        const token = await generateValidToken();
+
+        const response = await api
+          .post("/add-movie/favorite")
+          .send(body)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+      });
+
+      it("should respond with status 409 when the user alredy favorited this movie", async () => {
+        const body = generateValidBody();
+
+        const token = await generateValidToken();
+
+        await api
+          .post("/add-movie/favorite")
+          .send(body)
+          .set("Authorization", `Bearer ${token}`);
+
+        const response = await api
+          .post("/add-movie/favorite")
+          .send(body)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.CONFLICT);
+      });
+
+      it("should respond with status 200 when body is valid", async () => {
+        const body = generateValidBody();
+
+        const token = await generateValidToken();
+
+        const response = await api
+          .post("/add-movie/favorite")
+          .send(body)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.OK);
+      });
+
+      it("should save movie on db", async () => {
+        const body = generateValidBody();
+
+        const token = await generateValidToken();
+
+        const response = await api
+          .post("/add-movie/favorite")
+          .send(body)
+          .set("Authorization", `Bearer ${token}`);
+
+        const movie = await prisma.listmovies.findFirst({
+          where: {
+            movieid: body.movieid,
+          },
+        });
+        expect(movie).toEqual(
+          expect.objectContaining({
+            id: expect.any(Number),
+            movieid: body.movieid,
           })
         );
       });
