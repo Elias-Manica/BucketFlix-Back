@@ -11,3 +11,11 @@ export async function favoritedAmovie(movieid: number, userid: number) {
     },
   });
 }
+
+export async function findeLikedMovie(id: number) {
+  return prisma.listmovies.findFirst({
+    where: {
+      id,
+    },
+  });
+}
