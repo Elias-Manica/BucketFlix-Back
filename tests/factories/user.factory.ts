@@ -11,8 +11,8 @@ export async function createUser(
   return prisma.users.create({
     data: {
       email: params.email || faker.internet.email(),
-      username: params.username,
-      pictureUrl: params.pictureUrl,
+      username: params.username || faker.name.firstName(),
+      pictureUrl: params.pictureUrl || faker.image.imageUrl(),
     },
   });
 }

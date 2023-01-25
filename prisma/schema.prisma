@@ -32,6 +32,13 @@ model listmovies {
 model movies {
   id         Int          @id @default(autoincrement())
   movieid    Int          @unique
+  original_title String 
+  title String
+  overview String
+  poster_path String
+  tagline String
+  popularity Float
+  release_date String
   comments   comments[]
   listmovies listmovies[]
 }

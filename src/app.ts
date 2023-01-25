@@ -3,6 +3,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import { userRouter } from "./router/users.router";
+import { sessionRouter } from "./router/session.router";
+import { moviesRouter } from "./router/movies.router";
+import { commentsRouter } from "./router/comments.router";
+
 import { connectDb } from "./database/database";
 
 const server = express();
@@ -16,7 +20,10 @@ server
   .get("/status", async (req, res) => {
     res.sendStatus(201);
   })
-  .use("/sign-up", userRouter);
+  .use("/sign-up", userRouter)
+  .use("/sign-in", sessionRouter)
+  .use("/add-movie", moviesRouter)
+  .use("/comments", commentsRouter);
 
 export function init(): Promise<Express> {
   connectDb();
