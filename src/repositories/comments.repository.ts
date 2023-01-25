@@ -16,8 +16,20 @@ async function addComment(
   });
 }
 
+async function getComments(movieid: number) {
+  return prisma.comments.findMany({
+    where: {
+      movieid,
+    },
+    include: {
+      users: true,
+    },
+  });
+}
+
 const commentRepository = {
   addComment,
+  getComments,
 };
 
 export default commentRepository;

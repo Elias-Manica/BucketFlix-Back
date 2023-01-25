@@ -33,10 +33,13 @@ export const addCommentSchema = Joi.object({
     "number.max": "O rating deve ser um valor entre 0 e 5",
     "number.min": "O rating deve ser um valor entre 0 e 5",
   }),
-  apiKey: Joi.string().required().messages({
-    "string.empty": "A apiKey não pode ser vaziA",
-    "string.base": "A apiKey deve ser uma string",
-    "any.required": "Passar a apiKey é obrigatório",
+});
+
+export const findCommentSchema = Joi.object({
+  movieid: Joi.number().required().messages({
+    "number.empty": "O movieid não pode ser vazio",
+    "number.base": "O movieid deve ser um número",
+    "any.required": "Passar o movieid é obrigatório",
   }),
 });
 

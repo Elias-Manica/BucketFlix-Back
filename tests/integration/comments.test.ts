@@ -11,6 +11,7 @@ import jwt from "jsonwebtoken";
 
 import { createUser } from "../factories/user.factory";
 import { generateValidToken } from "../factories/session.factory";
+import { commentMovie } from "../factories/comments.factory";
 
 const api = supertest(server);
 
@@ -22,22 +23,13 @@ beforeAll(async () => {
 describe("POST /comments", () => {
   const generateValidBody = () => ({
     movieid: 550,
-    apiKey: "282f0a136717fde5f2065214b2d08a25",
-    comment: faker.lorem.paragraph(),
+    comment: faker.lorem.word(),
     rating: 5,
   });
 
   const invalidBodyMovieID = () => ({
     movieid: 55000000,
-    apiKey: "282f0a136717fde5f2065214b2d08a25",
-    comment: faker.lorem.paragraph(),
-    rating: 5,
-  });
-
-  const invalidBodyAPIKEY = () => ({
-    movieid: 550,
-    apiKey: "123",
-    comment: faker.lorem.paragraph(),
+    comment: faker.lorem.word(),
     rating: 5,
   });
 
@@ -111,19 +103,6 @@ describe("POST /comments", () => {
         expect(response.status).toBe(httpStatus.NOT_FOUND);
       });
 
-      it("should respond with status 401 when the api key send is not valid", async () => {
-        const body = invalidBodyAPIKEY();
-
-        const token = await generateValidToken();
-
-        const response = await api
-          .post("/comments")
-          .send(body)
-          .set("Authorization", `Bearer ${token}`);
-
-        expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-      });
-
       it("should respond with status 200 when body is valid", async () => {
         const body = generateValidBody();
 
@@ -164,6 +143,89 @@ describe("POST /comments", () => {
           })
         );
       });
+    });
+  });
+});
+
+describe("GET /comments", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await api.get("/comments");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await api
+      .get("/comments")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+
+    const token = jwt.sign(
+      { userId: userWithoutSession.id },
+      process.env.JWT_SECRET
+    );
+
+    const response = await api
+      .get("/comments")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("When token is valid", () => {
+    it("should respond with status 200 and a empty array when movieid dont have a comment", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .get("/comments?movieid=551")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual([]);
+    });
+
+    it("should respond with status 200 and a array with comments of the movie", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const comment = await commentMovie(550, user.id);
+
+      const response = await api
+        .get("/comments?movieid=550")
+        .set("Authorization", `Bearer ${token}`);
+
+      console.log(response.body);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(Number),
+            userid: user.id,
+            movieid: 550,
+            comment: comment.comment,
+            rating: comment.rating,
+            createdat: comment.createdat.toISOString(),
+            updatedat: comment.updatedat.toISOString(),
+            users: {
+              id: user.id,
+              email: user.email,
+              username: user.username,
+              pictureUrl: user.pictureUrl,
+              createdat: user.createdat.toISOString(),
+              updatedat: user.updatedat.toISOString(),
+            },
+          }),
+        ])
+      );
     });
   });
 });

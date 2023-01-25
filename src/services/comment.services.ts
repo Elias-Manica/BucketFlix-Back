@@ -12,7 +12,7 @@ async function addComment(
 ) {
   const hasMovieInApi = await moviesService.hasMovieInExternalApi(
     movieid,
-    apiKey
+    process.env.API_KEY
   );
 
   const hasMovieInDbAlredy = await moviesRepository.findBasedOnId(movieid);
@@ -40,8 +40,35 @@ async function addComment(
   return response;
 }
 
+async function getComments(movieid: number) {
+  const hasMovieInApi = await moviesService.hasMovieInExternalApi(
+    movieid,
+    process.env.API_KEY
+  );
+
+  const hasMovieInDbAlredy = await moviesRepository.findBasedOnId(movieid);
+
+  if (!hasMovieInDbAlredy) {
+    await moviesRepository.create(
+      movieid,
+      hasMovieInApi.original_title,
+      hasMovieInApi.title,
+      hasMovieInApi.overview,
+      hasMovieInApi.poster_path,
+      hasMovieInApi.tagline,
+      hasMovieInApi.popularity,
+      hasMovieInApi.release_date
+    );
+  }
+
+  const response = await commentRepository.getComments(movieid);
+
+  return response;
+}
+
 const commentService = {
   addComment,
+  getComments,
 };
 
 export default commentService;

@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
-import { addMovieSchema, addCommentSchema } from "../schemas/movies.schema";
+import {
+  addMovieSchema,
+  addCommentSchema,
+  findCommentSchema,
+} from "../schemas/movies.schema";
 
 import httpStatus from "http-status";
 
@@ -36,4 +40,20 @@ async function bodyCommentIsValid(
   next();
 }
 
-export { bodyAddMovieIsValid, bodyCommentIsValid };
+async function findCommentIsValid(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const isValid = findCommentSchema.validate(req.body, { abortEarly: false });
+
+  if (isValid.error) {
+    const error = isValid.error.details.map((erro) => erro.message);
+    res.status(httpStatus.UNPROCESSABLE_ENTITY).send(error);
+    return;
+  }
+
+  next();
+}
+
+export { bodyAddMovieIsValid, bodyCommentIsValid, findCommentIsValid };
