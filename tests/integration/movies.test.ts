@@ -23,18 +23,12 @@ beforeAll(async () => {
 describe("POST /add-movie", () => {
   const generateValidBody = () => ({
     movieid: 550,
-    apiKey: "282f0a136717fde5f2065214b2d08a25",
   });
 
   const invalidBodyMovieID = () => ({
     movieid: 55000000,
-    apiKey: "282f0a136717fde5f2065214b2d08a25",
   });
 
-  const invalidBodyAPIKEY = () => ({
-    movieid: 550,
-    apiKey: "123",
-  });
   it("should respond with status 401 if no token is given", async () => {
     const response = await api.post("/add-movie");
 
@@ -105,19 +99,6 @@ describe("POST /add-movie", () => {
         expect(response.status).toBe(httpStatus.NOT_FOUND);
       });
 
-      it("should respond with status 401 when the api key send is not valid", async () => {
-        const body = invalidBodyAPIKEY();
-
-        const token = await generateValidToken();
-
-        const response = await api
-          .post("/add-movie")
-          .send(body)
-          .set("Authorization", `Bearer ${token}`);
-
-        expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-      });
-
       it("should respond with status 201 and return id and movieid when body is valid", async () => {
         const body = generateValidBody();
 
@@ -178,18 +159,12 @@ describe("POST /add-movie", () => {
 describe("POST /add-movie/favorite", () => {
   const generateValidBody = () => ({
     movieid: 550,
-    apiKey: "282f0a136717fde5f2065214b2d08a25",
   });
 
   const invalidBodyMovieID = () => ({
     movieid: 55000000,
-    apiKey: "282f0a136717fde5f2065214b2d08a25",
   });
 
-  const invalidBodyAPIKEY = () => ({
-    movieid: 550,
-    apiKey: "123",
-  });
   it("should respond with status 401 if no token is given", async () => {
     const response = await api.post("/add-movie/favorite");
 
@@ -258,19 +233,6 @@ describe("POST /add-movie/favorite", () => {
           .set("Authorization", `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.NOT_FOUND);
-      });
-
-      it("should respond with status 401 when the api key send is not valid", async () => {
-        const body = invalidBodyAPIKEY();
-
-        const token = await generateValidToken();
-
-        const response = await api
-          .post("/add-movie/favorite")
-          .send(body)
-          .set("Authorization", `Bearer ${token}`);
-
-        expect(response.status).toBe(httpStatus.UNAUTHORIZED);
       });
 
       it("should respond with status 409 when the user alredy favorited this movie", async () => {

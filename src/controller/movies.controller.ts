@@ -5,10 +5,10 @@ import moviesService from "../services/movie.services";
 import httpStatus from "http-status";
 
 export async function addMovieInBd(req: Request, res: Response) {
-  const { movieid, apiKey } = req.body;
+  const { movieid } = req.body;
 
   try {
-    const movie = await moviesService.addMovie(movieid, apiKey);
+    const movie = await moviesService.addMovie(movieid, process.env.API_KEY);
 
     return res.status(httpStatus.CREATED).send(movie);
   } catch (error) {
@@ -31,10 +31,10 @@ export async function addMovieInBd(req: Request, res: Response) {
 export async function favoriteMovie(req: Request, res: Response) {
   const userId = res.locals.userid;
 
-  const { movieid, apiKey } = req.body;
+  const { movieid } = req.body;
 
   try {
-    await moviesService.favorite(movieid, userId, apiKey);
+    await moviesService.favorite(movieid, userId, process.env.API_KEY);
     return res
       .status(httpStatus.OK)
       .send({ msg: "Filme adicionado aos favoritos" });

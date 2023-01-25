@@ -7,11 +7,6 @@ export const addMovieSchema = Joi.object<moviesTypeId>({
     "number.base": "O movieid deve ser um número",
     "any.required": "Passar o movieid é obrigatório",
   }),
-  apiKey: Joi.string().required().messages({
-    "string.empty": "A apiKey não pode ser vaziA",
-    "string.base": "A apiKey deve ser uma string",
-    "any.required": "Passar a apiKey é obrigatório",
-  }),
 });
 
 export const addCommentSchema = Joi.object({
