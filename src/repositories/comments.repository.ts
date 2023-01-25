@@ -27,9 +27,27 @@ async function getComments(movieid: number) {
   });
 }
 
+async function getEspecifyComment(commentId: number) {
+  return prisma.comments.findFirst({
+    where: {
+      id: commentId,
+    },
+  });
+}
+
+async function deleteEspecifyComment(commentid: number) {
+  return prisma.comments.delete({
+    where: {
+      id: commentid,
+    },
+  });
+}
+
 const commentRepository = {
   addComment,
   getComments,
+  getEspecifyComment,
+  deleteEspecifyComment,
 };
 
 export default commentRepository;

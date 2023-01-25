@@ -2,7 +2,11 @@ import { Router } from "express";
 
 import { tokenIsValid } from "../middleware/auth.middleware";
 
-import { addComment, getComment } from "../controller/comments.controller";
+import {
+  addComment,
+  getComment,
+  deleteComment,
+} from "../controller/comments.controller";
 
 import {
   bodyCommentIsValid,
@@ -13,6 +17,7 @@ const commentsRouter = Router();
 
 commentsRouter
   .post("/", tokenIsValid, bodyCommentIsValid, addComment)
-  .get("/", tokenIsValid, getComment);
+  .get("/", tokenIsValid, getComment)
+  .delete("/", tokenIsValid, deleteComment);
 
 export { commentsRouter };

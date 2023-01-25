@@ -10,25 +10,7 @@ async function addComment(
   rating: number,
   apiKey: string
 ) {
-  const hasMovieInApi = await moviesService.hasMovieInExternalApi(
-    movieid,
-    process.env.API_KEY
-  );
-
-  const hasMovieInDbAlredy = await moviesRepository.findBasedOnId(movieid);
-
-  if (!hasMovieInDbAlredy) {
-    await moviesRepository.create(
-      movieid,
-      hasMovieInApi.original_title,
-      hasMovieInApi.title,
-      hasMovieInApi.overview,
-      hasMovieInApi.poster_path,
-      hasMovieInApi.tagline,
-      hasMovieInApi.popularity,
-      hasMovieInApi.release_date
-    );
-  }
+  await hasMovie(movieid);
 
   const response = await commentRepository.addComment(
     userid,
@@ -41,6 +23,30 @@ async function addComment(
 }
 
 async function getComments(movieid: number) {
+  await hasMovie(movieid);
+
+  const response = await commentRepository.getComments(movieid);
+
+  return response;
+}
+
+async function deleteComment(commentid: number, userid: number) {
+  const hasComment = await commentRepository.getEspecifyComment(commentid);
+
+  if (!hasComment) {
+    throw httpStatus.NOT_FOUND;
+  }
+
+  if (hasComment.userid !== userid) {
+    throw httpStatus.UNAUTHORIZED;
+  }
+
+  await commentRepository.deleteEspecifyComment(commentid);
+
+  return hasComment;
+}
+
+async function hasMovie(movieid: number) {
   const hasMovieInApi = await moviesService.hasMovieInExternalApi(
     movieid,
     process.env.API_KEY
@@ -60,15 +66,12 @@ async function getComments(movieid: number) {
       hasMovieInApi.release_date
     );
   }
-
-  const response = await commentRepository.getComments(movieid);
-
-  return response;
 }
 
 const commentService = {
   addComment,
   getComments,
+  deleteComment,
 };
 
 export default commentService;

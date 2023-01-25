@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 
 import { createUser } from "../factories/user.factory";
 import { generateValidToken } from "../factories/session.factory";
-import { commentMovie } from "../factories/comments.factory";
+import { commentMovie, findComment } from "../factories/comments.factory";
 
 const api = supertest(server);
 
@@ -226,6 +226,94 @@ describe("GET /comments", () => {
           }),
         ])
       );
+    });
+  });
+});
+
+describe("DELETE /comments", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await api.delete("/comments");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await api
+      .delete("/comments")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+
+    const token = jwt.sign(
+      { userId: userWithoutSession.id },
+      process.env.JWT_SECRET
+    );
+
+    const response = await api
+      .delete("/comments")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("When token is valid", () => {
+    it("should respond with status 404 when commentid dont send by user", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .delete("/comments")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 404 when commentid dont EXIST", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .delete("/comments?commentid=0")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 401 when user doesnt is the owener of comment", async () => {
+      const user = await createUser();
+
+      const unauthorizedUser = await createUser();
+
+      const token = await generateValidToken(unauthorizedUser);
+
+      const comment = await commentMovie(550, user.id);
+
+      const response = await api
+        .delete(`/comments?commentid=${comment.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+    });
+
+    it("should respond with status 200 and remove comment from db", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const comment = await commentMovie(550, user.id);
+
+      const response = await api
+        .delete(`/comments?commentid=${comment.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      const hasComment = await findComment(comment.id);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(hasComment).toEqual(null);
     });
   });
 });

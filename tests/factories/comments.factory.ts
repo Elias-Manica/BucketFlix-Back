@@ -12,3 +12,11 @@ export async function commentMovie(movieid: number, userid: number) {
     },
   });
 }
+
+export async function findComment(id: number) {
+  return prisma.comments.findFirst({
+    where: {
+      id,
+    },
+  });
+}
