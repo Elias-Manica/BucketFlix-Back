@@ -6,6 +6,7 @@ import { userRouter } from "./router/users.router";
 import { sessionRouter } from "./router/session.router";
 import { moviesRouter } from "./router/movies.router";
 import { commentsRouter } from "./router/comments.router";
+import { profileRouter } from "./router/profile.router";
 
 import { connectDb } from "./database/database";
 
@@ -23,7 +24,8 @@ server
   .use("/sign-up", userRouter)
   .use("/sign-in", sessionRouter)
   .use("/add-movie", moviesRouter)
-  .use("/comments", commentsRouter);
+  .use("/comments", commentsRouter)
+  .use("/user", profileRouter);
 
 export function init(): Promise<Express> {
   connectDb();
