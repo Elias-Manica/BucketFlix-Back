@@ -11,8 +11,15 @@ async function getProfile(userid: number) {
   return response;
 }
 
+async function getProfileByName(username: string) {
+  const response = await profileRepository.getUserByName(username);
+
+  return response;
+}
+
 const profileService = {
   getProfile,
+  getProfileByName,
 };
 
 export default profileService;

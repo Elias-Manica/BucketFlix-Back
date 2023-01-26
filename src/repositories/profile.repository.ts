@@ -1,7 +1,6 @@
 import { prisma } from "../database/database";
 
 async function get(userid: number) {
-  console.log(userid);
   return prisma.users.findUnique({
     where: {
       id: userid,
@@ -19,8 +18,20 @@ async function get(userid: number) {
   });
 }
 
+async function getUserByName(username: string) {
+  return prisma.users.findMany({
+    take: 5,
+    where: {
+      username: {
+        contains: username,
+      },
+    },
+  });
+}
+
 const profileRepository = {
   get,
+  getUserByName,
 };
 
 export default profileRepository;

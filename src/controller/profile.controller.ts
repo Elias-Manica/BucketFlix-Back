@@ -27,3 +27,23 @@ export async function getProfile(req: Request, res: Response) {
       .send({ msg: "Erro interno no servidor" });
   }
 }
+
+export async function getProfileByName(req: Request, res: Response) {
+  const { username } = req.query;
+
+  if (!username) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .send({ msg: "Parâmetro username não enviado" });
+  }
+
+  try {
+    const profile = await profileService.getProfileByName(String(username));
+
+    return res.status(httpStatus.OK).send(profile);
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
