@@ -263,7 +263,7 @@ describe("DELETE /comments", () => {
   });
 
   describe("When token is valid", () => {
-    it("should respond with status 404 when commentid dont send by user", async () => {
+    it("should respond with status 400 when commentid dont send by user", async () => {
       const token = await generateValidToken();
 
       const response = await api
