@@ -21,7 +21,7 @@ server
   .get("/status", async (req, res) => {
     res.sendStatus(201);
   })
-  .use("/sign-up", userRouter)
+  .use("/logout", userRouter)
   .use("/sign-in", sessionRouter)
   .use("/add-movie", moviesRouter)
   .use("/comments", commentsRouter)

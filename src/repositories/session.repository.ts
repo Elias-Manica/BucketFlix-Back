@@ -18,9 +18,27 @@ async function hasSession(userid: number, token: string) {
   });
 }
 
+async function findSession(userid: number) {
+  return prisma.session.findFirst({
+    where: {
+      userid,
+    },
+  });
+}
+
+async function deleteSession(id: number) {
+  return prisma.session.delete({
+    where: {
+      id,
+    },
+  });
+}
+
 const sessionRepository = {
   create,
   hasSession,
+  findSession,
+  deleteSession,
 };
 
 export default sessionRepository;
