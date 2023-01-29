@@ -73,6 +73,16 @@ async function getMovies(userid: number) {
   return listMovies;
 }
 
+async function movieisfavorite(movieid: number, userid: number) {
+  const result = await moviesRepository.movieIsFavorited(movieid, userid);
+
+  if (!result) {
+    throw httpStatus.NOT_FOUND;
+  }
+
+  return result;
+}
+
 async function removeFavoriteMovie(favoriteid: number, userid: number) {
   const movieLiked = await moviesRepository.findEspecifyMovie(favoriteid);
 
@@ -95,6 +105,7 @@ const moviesService = {
   getMovies,
   hasMovieInExternalApi,
   removeFavoriteMovie,
+  movieisfavorite,
 };
 
 export default moviesService;
