@@ -8,7 +8,16 @@ async function getProfile(userid: number) {
     throw httpStatus.NOT_FOUND;
   }
 
-  return response;
+  const body = {
+    id: response.id,
+    username: response.username,
+    pictureUrl: response.pictureUrl,
+    createdat: response.createdat,
+    updatedat: response.updatedat,
+    listmovies: response.listmovies,
+  };
+
+  return body;
 }
 
 async function getProfileByName(username: string) {

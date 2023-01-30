@@ -60,6 +60,25 @@ export async function favoriteMovie(req: Request, res: Response) {
   }
 }
 
+export async function isfavorite(req: Request, res: Response) {
+  const userId = res.locals.userid;
+  const { movieid } = req.body;
+
+  try {
+    const result = await moviesService.movieisfavorite(movieid, userId);
+    return res.status(httpStatus.OK).send(result);
+  } catch (error) {
+    if (error.response?.status === 404 || error === 404) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .send({ msg: "Este filme não foi curtido por você" });
+    }
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
+
 export async function getFavoritesMovies(req: Request, res: Response) {
   const userId = res.locals.userid;
 

@@ -43,7 +43,7 @@ export async function getComment(req: Request, res: Response) {
   try {
     const list = await commentService.getComments(Number(movieid));
 
-    return res.status(httpStatus.OK).send(list);
+    return res.status(httpStatus.OK).send(list.reverse());
   } catch (error) {
     if (error.response?.status === 401) {
       return res.status(httpStatus.UNAUTHORIZED).send({

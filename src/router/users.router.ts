@@ -1,10 +1,10 @@
 import { Router } from "express";
 
 import { usersPost } from "../controller/users.controller";
-import { signUpIsValid, hadEmailUnique } from "../middleware/auth.middleware";
+import { tokenIsValid } from "../middleware/auth.middleware";
 
 const userRouter = Router();
 
-userRouter.post("/", signUpIsValid, hadEmailUnique, usersPost);
+userRouter.post("/", tokenIsValid, usersPost);
 
 export { userRouter };
