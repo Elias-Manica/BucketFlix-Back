@@ -18,6 +18,6 @@ moviesRouter
   .post("/favorite", tokenIsValid, bodyAddMovieIsValid, favoriteMovie)
   .get("/favorite", tokenIsValid, getFavoritesMovies)
   .delete("/favorite", tokenIsValid, removeFavoriteMovie)
-  .get("/isfavorite", tokenIsValid, bodyAddMovieIsValid, isfavorite);
+  .post("/isfavorite", tokenIsValid, bodyAddMovieIsValid, isfavorite);
 
 export { moviesRouter };

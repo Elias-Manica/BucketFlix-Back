@@ -19,37 +19,6 @@ beforeAll(async () => {
 });
 
 describe("GET /user", () => {
-  it("should respond with status 401 if no token is given", async () => {
-    const response = await api.get("/user");
-
-    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  });
-
-  it("should respond with status 401 if given token is not valid", async () => {
-    const token = faker.lorem.word();
-
-    const response = await api
-      .get("/user")
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  });
-
-  it("should respond with status 401 if there is no session for given token", async () => {
-    const userWithoutSession = await createUser();
-
-    const token = jwt.sign(
-      { userId: userWithoutSession.id },
-      process.env.JWT_SECRET
-    );
-
-    const response = await api
-      .get("/user")
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  });
-
   describe("When token is valid", () => {
     it("should respond with status 400 when userid dont send by user", async () => {
       const token = await generateValidToken();
@@ -83,7 +52,6 @@ describe("GET /user", () => {
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual({
         id: user.id,
-        email: user.email,
         username: user.username,
         pictureUrl: user.pictureUrl,
         createdat: user.createdat.toISOString(),
@@ -116,7 +84,6 @@ describe("GET /user", () => {
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual({
         id: user.id,
-        email: user.email,
         username: user.username,
         pictureUrl: user.pictureUrl,
         createdat: user.createdat.toISOString(),
@@ -147,37 +114,6 @@ describe("GET /user", () => {
 });
 
 describe("GET /user/name", () => {
-  it("should respond with status 401 if no token is given", async () => {
-    const response = await api.get("/user/name");
-
-    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  });
-
-  it("should respond with status 401 if given token is not valid", async () => {
-    const token = faker.lorem.word();
-
-    const response = await api
-      .get("/user/name")
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  });
-
-  it("should respond with status 401 if there is no session for given token", async () => {
-    const userWithoutSession = await createUser();
-
-    const token = jwt.sign(
-      { userId: userWithoutSession.id },
-      process.env.JWT_SECRET
-    );
-
-    const response = await api
-      .get("/user/name")
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  });
-
   describe("When token is valid", () => {
     it("should respond with status 400 when username dont send by user", async () => {
       const token = await generateValidToken();

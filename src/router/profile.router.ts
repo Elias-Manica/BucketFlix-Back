@@ -5,8 +5,6 @@ import { tokenIsValid } from "../middleware/auth.middleware";
 
 const profileRouter = Router();
 
-profileRouter
-  .get("/", tokenIsValid, getProfile)
-  .get("/name", tokenIsValid, getProfileByName);
+profileRouter.get("/", getProfile).get("/name", getProfileByName);
 
 export { profileRouter };
