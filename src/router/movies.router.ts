@@ -6,6 +6,7 @@ import {
   addMovieInBd,
   favoriteMovie,
   getFavoritesMovies,
+  getWatchedMovies,
   isfavorite,
   isWatched,
   removeFavoriteMovie,
@@ -27,6 +28,7 @@ moviesRouter
   .post("/isfavorite", tokenIsValid, bodyAddMovieIsValid, isfavorite)
   .post("/watched", tokenIsValid, bodyWatchedMovieIsValid, watchedMovie)
   .delete("/watched", tokenIsValid, removeWatchedMovie)
-  .get("/watched", tokenIsValid, isWatched);
+  .get("/watched", tokenIsValid, isWatched)
+  .get("/watched/list", tokenIsValid, getWatchedMovies);
 
 export { moviesRouter };

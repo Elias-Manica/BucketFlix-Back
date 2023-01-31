@@ -73,6 +73,12 @@ async function getMovies(userid: number) {
   return listMovies;
 }
 
+async function getWatchMovies(userid: number) {
+  const listMovies = await moviesRepository.watch(userid);
+
+  return listMovies;
+}
+
 async function movieisfavorite(movieid: number, userid: number) {
   const result = await moviesRepository.movieIsFavorited(movieid, userid);
 
@@ -135,18 +141,17 @@ async function watched(movieid: number, userid: number, rating: number) {
   return response;
 }
 
-async function removeWatchedMovie(watchedid: number, userid: number) {
-  const movisInList = await moviesRepository.findSpecifyWatcheMovie(watchedid);
+async function removeWatchedMovie(movieid: number, userid: number) {
+  const movisInList = await moviesRepository.findSpecifyWatcheMovieByMovieid(
+    movieid,
+    userid
+  );
 
   if (!movisInList) {
     throw httpStatus.NOT_FOUND;
   }
 
-  if (movisInList.userid !== userid) {
-    throw httpStatus.UNAUTHORIZED;
-  }
-
-  await moviesRepository.removeSpecifyWatchedMovie(watchedid);
+  await moviesRepository.removeSpecifyWatchedMovie(movisInList.id);
 
   return movisInList;
 }
@@ -171,6 +176,7 @@ const moviesService = {
   watched,
   removeWatchedMovie,
   isWatched,
+  getWatchMovies,
 };
 
 export default moviesService;
