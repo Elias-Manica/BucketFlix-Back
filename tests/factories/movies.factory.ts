@@ -19,3 +19,28 @@ export async function findeLikedMovie(id: number) {
     },
   });
 }
+
+export async function watchedAmovie(
+  movieid: number,
+  userid: number,
+  rating: number
+) {
+  return prisma.watchedMovies.create({
+    data: {
+      movieid,
+      userid,
+      rating,
+    },
+    include: {
+      movie: true,
+    },
+  });
+}
+
+export async function findeWatchedMovie(id: number) {
+  return prisma.watchedMovies.findFirst({
+    where: {
+      id,
+    },
+  });
+}

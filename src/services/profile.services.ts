@@ -26,9 +26,50 @@ async function getProfileByName(username: string) {
   return response;
 }
 
+async function follow(ownuserId: number, userid: number) {
+  await getProfile(userid);
+
+  const isFollowing = await profileRepository.isFollow(ownuserId, userid);
+
+  if (isFollowing) {
+    throw httpStatus.CONFLICT;
+  }
+
+  const follow = await profileRepository.followUser(ownuserId, userid);
+
+  return follow;
+}
+
+async function unfollow(ownuserId: number, userid: number) {
+  await getProfile(userid);
+
+  const isFollowing = await profileRepository.isFollow(ownuserId, userid);
+
+  if (!isFollowing) {
+    throw httpStatus.CONFLICT;
+  }
+
+  const follow = await profileRepository.unfollowUser(isFollowing.id);
+
+  return follow;
+}
+
+async function isfollow(ownuserId: number, userid: number) {
+  const isFollowing = await profileRepository.isFollow(ownuserId, userid);
+
+  if (!isFollowing) {
+    throw httpStatus.NOT_FOUND;
+  }
+
+  return isFollowing;
+}
+
 const profileService = {
   getProfile,
   getProfileByName,
+  follow,
+  unfollow,
+  isfollow,
 };
 
 export default profileService;

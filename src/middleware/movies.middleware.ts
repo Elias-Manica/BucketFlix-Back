@@ -4,6 +4,7 @@ import {
   addMovieSchema,
   addCommentSchema,
   findCommentSchema,
+  watchedSchema,
 } from "../schemas/movies.schema";
 
 import httpStatus from "http-status";
@@ -56,4 +57,25 @@ async function findCommentIsValid(
   next();
 }
 
-export { bodyAddMovieIsValid, bodyCommentIsValid, findCommentIsValid };
+async function bodyWatchedMovieIsValid(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const isValid = watchedSchema.validate(req.body, { abortEarly: false });
+
+  if (isValid.error) {
+    const error = isValid.error.details.map((erro) => erro.message);
+    res.status(httpStatus.UNPROCESSABLE_ENTITY).send(error);
+    return;
+  }
+
+  next();
+}
+
+export {
+  bodyAddMovieIsValid,
+  bodyCommentIsValid,
+  findCommentIsValid,
+  bodyWatchedMovieIsValid,
+};

@@ -43,8 +43,31 @@ async function addToFavoritList(movieid: number, userid: number) {
   });
 }
 
+async function addToWatchedList(
+  movieid: number,
+  userid: number,
+  rating: number
+) {
+  return prisma.watchedMovies.create({
+    data: {
+      movieid,
+      userid,
+      rating,
+    },
+  });
+}
+
 async function movieIsFavorited(movieid: number, userid: number) {
   return prisma.listmovies.findFirst({
+    where: {
+      movieid,
+      userid,
+    },
+  });
+}
+
+async function movieIsWatched(movieid: number, userid: number) {
+  return prisma.watchedMovies.findFirst({
     where: {
       movieid,
       userid,
@@ -71,10 +94,26 @@ async function findEspecifyMovie(favoriteid: number) {
   });
 }
 
+async function findSpecifyWatcheMovie(watchedid: number) {
+  return prisma.watchedMovies.findFirst({
+    where: {
+      id: watchedid,
+    },
+  });
+}
+
 async function removeEspecifyMovie(favoriteid: number) {
   return prisma.listmovies.delete({
     where: {
       id: favoriteid,
+    },
+  });
+}
+
+async function removeSpecifyWatchedMovie(watchedid: number) {
+  return prisma.watchedMovies.delete({
+    where: {
+      id: watchedid,
     },
   });
 }
@@ -95,6 +134,10 @@ const moviesRepository = {
   listMovies,
   findEspecifyMovie,
   removeEspecifyMovie,
+  movieIsWatched,
+  addToWatchedList,
+  findSpecifyWatcheMovie,
+  removeSpecifyWatchedMovie,
 };
 
 export default moviesRepository;

@@ -124,3 +124,61 @@ export async function removeFavoriteMovie(req: Request, res: Response) {
       .send({ msg: "Erro interno no servidor" });
   }
 }
+
+export async function watchedMovie(req: Request, res: Response) {
+  const userId = res.locals.userid;
+  const { movieid, rating } = req.body;
+
+  try {
+    await moviesService.watched(movieid, userId, rating);
+    return res
+      .status(httpStatus.OK)
+      .send({ msg: "Filme adicionado aos assistidos" });
+  } catch (error) {
+    if (error.response?.status === 404 || error === 404) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .send({ msg: "Este filme não foi encontrado no banco de dados" });
+    }
+    if (error.response?.status === 409 || error === 409) {
+      return res
+        .status(httpStatus.CONFLICT)
+        .send({ msg: "Esse filme já está na sua lista de assistidos" });
+    }
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
+
+export async function removeWatchedMovie(req: Request, res: Response) {
+  const userId = res.locals.userid;
+  const { watchedid } = req.query;
+
+  if (!watchedid) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .send({ msg: "Parâmetro watchedid não enviado" });
+  }
+
+  try {
+    await moviesService.removeWatchedMovie(Number(watchedid), userId);
+    return res
+      .status(httpStatus.OK)
+      .send({ msg: "Filme removido da lista de assistidos" });
+  } catch (error) {
+    if (error.response?.status === 401 || error === 401) {
+      return res.status(httpStatus.UNAUTHORIZED).send({
+        msg: "Você não tem permissão para tirar dessa lista esse filme",
+      });
+    }
+    if (error.response?.status === 404 || error === 404) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .send({ msg: "Este filme não foi encontrado no banco de dados" });
+    }
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
