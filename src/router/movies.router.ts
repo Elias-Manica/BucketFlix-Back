@@ -7,6 +7,7 @@ import {
   favoriteMovie,
   getFavoritesMovies,
   isfavorite,
+  isWatched,
   removeFavoriteMovie,
   removeWatchedMovie,
   watchedMovie,
@@ -25,6 +26,7 @@ moviesRouter
   .delete("/favorite", tokenIsValid, removeFavoriteMovie)
   .post("/isfavorite", tokenIsValid, bodyAddMovieIsValid, isfavorite)
   .post("/watched", tokenIsValid, bodyWatchedMovieIsValid, watchedMovie)
-  .delete("/watched", tokenIsValid, removeWatchedMovie);
+  .delete("/watched", tokenIsValid, removeWatchedMovie)
+  .get("/watched", tokenIsValid, isWatched);
 
 export { moviesRouter };

@@ -182,3 +182,29 @@ export async function removeWatchedMovie(req: Request, res: Response) {
       .send({ msg: "Erro interno no servidor" });
   }
 }
+
+export async function isWatched(req: Request, res: Response) {
+  const userId = res.locals.userid;
+  const { movieid } = req.query;
+
+  if (!movieid) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .send({ msg: "Parâmetro movieid não enviado" });
+  }
+
+  try {
+    await moviesService.isWatched(Number(movieid), userId);
+
+    return res.status(httpStatus.OK).send({ msg: "Assistido" });
+  } catch (error) {
+    if (error.response?.status === 404 || error === 404) {
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .send({ msg: "Este filme não foi assistido por você" });
+    }
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
