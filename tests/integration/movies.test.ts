@@ -685,3 +685,72 @@ describe("DELETE /add-movie/watched", () => {
     });
   });
 });
+
+describe("GET /add-movie/watched", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await api.get("/add-movie/watched");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await api
+      .get("/add-movie/watched")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+
+    const token = jwt.sign(
+      { userId: userWithoutSession.id },
+      process.env.JWT_SECRET
+    );
+
+    const response = await api
+      .get("/add-movie/watched")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("When token is valid", () => {
+    it("should respond with status 400 when movieid dont send by user", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .get("/add-movie/watched")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 404 when user dont watch movieid", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .get("/add-movie/watched?movieid=0")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 200 when user watched movieid", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      await watchedAmovie(550, user.id, 5);
+
+      const response = await api
+        .get(`/add-movie/watched?movieid=550`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+    });
+  });
+});

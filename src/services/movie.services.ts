@@ -151,6 +151,16 @@ async function removeWatchedMovie(watchedid: number, userid: number) {
   return movisInList;
 }
 
+async function isWatched(movieid: number, userid: number) {
+  const movieIsWatched = await moviesRepository.movieIsWatched(movieid, userid);
+
+  if (!movieIsWatched) {
+    throw httpStatus.NOT_FOUND;
+  }
+
+  return movieIsWatched;
+}
+
 const moviesService = {
   addMovie,
   favorite,
@@ -160,6 +170,7 @@ const moviesService = {
   movieisfavorite,
   watched,
   removeWatchedMovie,
+  isWatched,
 };
 
 export default moviesService;
