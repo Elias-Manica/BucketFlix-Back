@@ -38,6 +38,21 @@ export const findCommentSchema = Joi.object({
   }),
 });
 
+export const watchedSchema = Joi.object({
+  movieid: Joi.number().required().messages({
+    "number.empty": "O movieid não pode ser vazio",
+    "number.base": "O movieid deve ser um número",
+    "any.required": "Passar o movieid é obrigatório",
+  }),
+  rating: Joi.number().required().max(5).min(0).integer().messages({
+    "number.empty": "O rating não pode ser vazio",
+    "number.base": "O rating deve ser um número",
+    "any.required": "Passar o rating é obrigatório",
+    "number.max": "O rating deve ser um valor entre 0 e 5",
+    "number.min": "O rating deve ser um valor entre 0 e 5",
+  }),
+});
+
 export type moviesTypeId = {
   movieid: string;
   apiKey: string;

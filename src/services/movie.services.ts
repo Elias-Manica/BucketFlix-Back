@@ -99,6 +99,58 @@ async function removeFavoriteMovie(favoriteid: number, userid: number) {
   return movieLiked;
 }
 
+async function watched(movieid: number, userid: number, rating: number) {
+  const hasMovieInApi = await hasMovieInExternalApi(
+    movieid,
+    process.env.API_KEY
+  );
+
+  const hasMovieInDbAlredy = await moviesRepository.findBasedOnId(movieid);
+
+  if (!hasMovieInDbAlredy) {
+    await moviesRepository.create(
+      movieid,
+      hasMovieInApi.original_title,
+      hasMovieInApi.title,
+      hasMovieInApi.overview,
+      hasMovieInApi.poster_path,
+      hasMovieInApi.tagline,
+      hasMovieInApi.popularity,
+      hasMovieInApi.release_date
+    );
+  }
+
+  const movieIsWatched = await moviesRepository.movieIsWatched(movieid, userid);
+
+  if (movieIsWatched) {
+    throw httpStatus.CONFLICT;
+  }
+
+  const response = await moviesRepository.addToWatchedList(
+    movieid,
+    userid,
+    rating
+  );
+
+  return response;
+}
+
+async function removeWatchedMovie(watchedid: number, userid: number) {
+  const movisInList = await moviesRepository.findSpecifyWatcheMovie(watchedid);
+
+  if (!movisInList) {
+    throw httpStatus.NOT_FOUND;
+  }
+
+  if (movisInList.userid !== userid) {
+    throw httpStatus.UNAUTHORIZED;
+  }
+
+  await moviesRepository.removeSpecifyWatchedMovie(watchedid);
+
+  return movisInList;
+}
+
 const moviesService = {
   addMovie,
   favorite,
@@ -106,6 +158,8 @@ const moviesService = {
   hasMovieInExternalApi,
   removeFavoriteMovie,
   movieisfavorite,
+  watched,
+  removeWatchedMovie,
 };
 
 export default moviesService;

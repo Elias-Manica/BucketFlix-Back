@@ -29,6 +29,17 @@ model listmovies {
   users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model watchedMovies {
+  id        Int       @id @default(autoincrement())
+  userid    Int
+  movieid   Int
+  rating    Int
+  createdat DateTime? @default(now()) @db.Date
+  updatedat DateTime? @default(now()) @db.Date
+  users users @relation(fields: [userid], references: [id])
+  movie movies @relation(fields: [movieid], references: [movieid])
+}
+
 model movies {
   id         Int          @id @default(autoincrement())
   movieid    Int          @unique
@@ -41,6 +52,8 @@ model movies {
   release_date String
   comments   comments[]
   listmovies listmovies[]
+  watchedMovies watchedMovies[]
+  following following[]
 }
 
 model session {
@@ -62,4 +75,18 @@ model users {
   comments   comments[]
   listmovies listmovies[]
   session    session[]
+  following following[]
+  watchedMovies watchedMovies[]
 }
+
+model following {
+  id        Int       @id @default(autoincrement())
+  userid    Int 
+  movieid   Int
+  rating    Int
+  createdat DateTime? @default(now()) @db.Date
+  updatedat DateTime? @default(now()) @db.Date
+  users users @relation(fields: [userid], references: [id])
+  movie movies @relation(fields: [movieid], references: [movieid])
+}
+

@@ -8,8 +8,13 @@ import {
   getFavoritesMovies,
   isfavorite,
   removeFavoriteMovie,
+  removeWatchedMovie,
+  watchedMovie,
 } from "../controller/movies.controller";
-import { bodyAddMovieIsValid } from "../middleware/movies.middleware";
+import {
+  bodyAddMovieIsValid,
+  bodyWatchedMovieIsValid,
+} from "../middleware/movies.middleware";
 
 const moviesRouter = Router();
 
@@ -18,6 +23,8 @@ moviesRouter
   .post("/favorite", tokenIsValid, bodyAddMovieIsValid, favoriteMovie)
   .get("/favorite", tokenIsValid, getFavoritesMovies)
   .delete("/favorite", tokenIsValid, removeFavoriteMovie)
-  .post("/isfavorite", tokenIsValid, bodyAddMovieIsValid, isfavorite);
+  .post("/isfavorite", tokenIsValid, bodyAddMovieIsValid, isfavorite)
+  .post("/watched", tokenIsValid, bodyWatchedMovieIsValid, watchedMovie)
+  .delete("/watched", tokenIsValid, removeWatchedMovie);
 
 export { moviesRouter };
