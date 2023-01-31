@@ -7,7 +7,11 @@ import httpStatus from "http-status";
 import { faker } from "@faker-js/faker";
 
 import jwt from "jsonwebtoken";
-import { createUser } from "../factories/user.factory";
+import {
+  createFollow,
+  createUser,
+  findFollow,
+} from "../factories/user.factory";
 import { generateValidToken } from "../factories/session.factory";
 import { favoritedAmovie } from "../factories/movies.factory";
 
@@ -159,6 +163,275 @@ describe("GET /user/name", () => {
           updatedat: user2.updatedat.toISOString(),
         },
       ]);
+    });
+  });
+});
+
+describe("POST /user/follow", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await api.post("/user/follow");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await api
+      .post("/user/follow")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign(
+      { userId: userWithoutSession.id },
+      process.env.JWT_SECRET
+    );
+
+    const response = await api
+      .post("/user/follow")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+  describe("When token is valid", () => {
+    it("should respond with status 400 when userid dont send by user", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .post("/user/follow")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 400 when userid is the same id of the user", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .post(`/user/follow?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 404 when userid dont EXIST", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .post("/user/follow?userid=0")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 409 when user already follow userid", async () => {
+      const user = await createUser();
+      const secondUser = await createUser();
+      const token = await generateValidToken(user);
+
+      await createFollow(user.id, secondUser.id);
+
+      const response = await api
+        .post(`/user/follow?userid=${secondUser.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.CONFLICT);
+    });
+
+    it("should respond with status 200 and follow user", async () => {
+      const user = await createUser();
+      const secondUser = await createUser();
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .post(`/user/follow?userid=${secondUser.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      const isFollow = await findFollow(user.id, secondUser.id);
+      console.log(isFollow, " isfollow");
+      expect(response.status).toBe(httpStatus.OK);
+      expect(isFollow).toBeTruthy();
+    });
+  });
+});
+
+describe("DELETE /user/follow", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await api.delete("/user/follow");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await api
+      .delete("/user/follow")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign(
+      { userId: userWithoutSession.id },
+      process.env.JWT_SECRET
+    );
+
+    const response = await api
+      .delete("/user/follow")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+  describe("When token is valid", () => {
+    it("should respond with status 400 when userid dont send by user", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .delete("/user/follow")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 400 when userid is the same id of the user", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .delete(`/user/follow?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 404 when userid dont EXIST", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .delete("/user/follow?userid=0")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 409 when user dont follow userid", async () => {
+      const user = await createUser();
+      const secondUser = await createUser();
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .delete(`/user/follow?userid=${secondUser.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.CONFLICT);
+    });
+
+    it("should respond with status 200 and unfollow user", async () => {
+      const user = await createUser();
+      const secondUser = await createUser();
+      const token = await generateValidToken(user);
+
+      await createFollow(user.id, secondUser.id);
+
+      const response = await api
+        .delete(`/user/follow?userid=${secondUser.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      const isFollow = await findFollow(user.id, secondUser.id);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(isFollow).toBeFalsy();
+    });
+  });
+});
+
+describe("GET /user/follow", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await api.get("/user/follow");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await api
+      .get("/user/follow")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign(
+      { userId: userWithoutSession.id },
+      process.env.JWT_SECRET
+    );
+
+    const response = await api
+      .get("/user/follow")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+  describe("When token is valid", () => {
+    it("should respond with status 400 when userid dont send by user", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .get("/user/follow")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 400 when userid is the same id of the user", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .get(`/user/follow?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 404 when user dont follow userid", async () => {
+      const user = await createUser();
+      const secondUser = await createUser();
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .get(`/user/follow?userid=${secondUser.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.NOT_FOUND);
+    });
+
+    it("should respond with status 200 if user follow userid", async () => {
+      const user = await createUser();
+      const secondUser = await createUser();
+      const token = await generateValidToken(user);
+
+      await createFollow(user.id, secondUser.id);
+
+      const response = await api
+        .get(`/user/follow?userid=${secondUser.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      const isFollow = await findFollow(user.id, secondUser.id);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(isFollow).toBeTruthy();
     });
   });
 });

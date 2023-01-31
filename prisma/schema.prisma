@@ -53,7 +53,6 @@ model movies {
   comments   comments[]
   listmovies listmovies[]
   watchedMovies watchedMovies[]
-  following following[]
 }
 
 model session {
@@ -75,18 +74,18 @@ model users {
   comments   comments[]
   listmovies listmovies[]
   session    session[]
-  following following[]
+  following following[] @relation(name: "OwnUser")
+   followed following[] @relation(name: "Follow")
   watchedMovies watchedMovies[]
 }
 
 model following {
   id        Int       @id @default(autoincrement())
   userid    Int 
-  movieid   Int
-  rating    Int
+  userFollowed Int
   createdat DateTime? @default(now()) @db.Date
   updatedat DateTime? @default(now()) @db.Date
-  users users @relation(fields: [userid], references: [id])
-  movie movies @relation(fields: [movieid], references: [movieid])
+  users users @relation(name: "OwnUser", fields: [userid], references: [id])
+  usersFollow users @relation(name: "Follow", fields: [userFollowed], references: [id])
 }
 

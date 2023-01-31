@@ -16,3 +16,21 @@ export async function createUser(
     },
   });
 }
+
+export async function findFollow(ownuserId: number, userid: number) {
+  return prisma.following.findFirst({
+    where: {
+      userid: ownuserId,
+      userFollowed: userid,
+    },
+  });
+}
+
+export async function createFollow(ownuserId: number, userid: number) {
+  return prisma.following.create({
+    data: {
+      userid: ownuserId,
+      userFollowed: userid,
+    },
+  });
+}
