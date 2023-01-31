@@ -29,6 +29,6 @@ moviesRouter
   .post("/watched", tokenIsValid, bodyWatchedMovieIsValid, watchedMovie)
   .delete("/watched", tokenIsValid, removeWatchedMovie)
   .get("/watched", tokenIsValid, isWatched)
-  .get("/watched/list", tokenIsValid, getWatchedMovies);
+  .get("/watched/list", getWatchedMovies);
 
 export { moviesRouter };

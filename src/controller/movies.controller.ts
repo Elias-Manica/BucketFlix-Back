@@ -210,10 +210,10 @@ export async function isWatched(req: Request, res: Response) {
 }
 
 export async function getWatchedMovies(req: Request, res: Response) {
-  const userId = res.locals.userid;
+  const { userid } = req.query;
 
   try {
-    const listMovies = await moviesService.getWatchMovies(userId);
+    const listMovies = await moviesService.getWatchMovies(Number(userid));
     return res.status(httpStatus.OK).send(listMovies);
   } catch (error) {
     return res
