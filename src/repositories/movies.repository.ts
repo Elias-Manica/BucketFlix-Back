@@ -86,6 +86,17 @@ async function listMovies(userid: number) {
   });
 }
 
+async function watch(userid: number) {
+  return prisma.watchedMovies.findMany({
+    where: {
+      userid,
+    },
+    include: {
+      movie: true,
+    },
+  });
+}
+
 async function findEspecifyMovie(favoriteid: number) {
   return prisma.listmovies.findFirst({
     where: {
@@ -98,6 +109,18 @@ async function findSpecifyWatcheMovie(watchedid: number) {
   return prisma.watchedMovies.findFirst({
     where: {
       id: watchedid,
+    },
+  });
+}
+
+async function findSpecifyWatcheMovieByMovieid(
+  movieid: number,
+  userid: number
+) {
+  return prisma.watchedMovies.findFirst({
+    where: {
+      movieid,
+      userid,
     },
   });
 }
@@ -138,6 +161,8 @@ const moviesRepository = {
   addToWatchedList,
   findSpecifyWatcheMovie,
   removeSpecifyWatchedMovie,
+  findSpecifyWatcheMovieByMovieid,
+  watch,
 };
 
 export default moviesRepository;

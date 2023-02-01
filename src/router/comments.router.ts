@@ -6,18 +6,17 @@ import {
   addComment,
   getComment,
   deleteComment,
+  listComments,
 } from "../controller/comments.controller";
 
-import {
-  bodyCommentIsValid,
-  findCommentIsValid,
-} from "../middleware/movies.middleware";
+import { bodyCommentIsValid } from "../middleware/movies.middleware";
 
 const commentsRouter = Router();
 
 commentsRouter
   .post("/", tokenIsValid, bodyCommentIsValid, addComment)
   .get("/", tokenIsValid, getComment)
-  .delete("/", tokenIsValid, deleteComment);
+  .delete("/", tokenIsValid, deleteComment)
+  .get("/users", listComments);
 
 export { commentsRouter };

@@ -153,16 +153,16 @@ export async function watchedMovie(req: Request, res: Response) {
 
 export async function removeWatchedMovie(req: Request, res: Response) {
   const userId = res.locals.userid;
-  const { watchedid } = req.query;
+  const { movieid } = req.query;
 
-  if (!watchedid) {
+  if (!movieid) {
     return res
       .status(httpStatus.BAD_REQUEST)
-      .send({ msg: "Parâmetro watchedid não enviado" });
+      .send({ msg: "Parâmetro movieid não enviado" });
   }
 
   try {
-    await moviesService.removeWatchedMovie(Number(watchedid), userId);
+    await moviesService.removeWatchedMovie(Number(movieid), userId);
     return res
       .status(httpStatus.OK)
       .send({ msg: "Filme removido da lista de assistidos" });
@@ -203,6 +203,19 @@ export async function isWatched(req: Request, res: Response) {
         .status(httpStatus.NOT_FOUND)
         .send({ msg: "Este filme não foi assistido por você" });
     }
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
+
+export async function getWatchedMovies(req: Request, res: Response) {
+  const { userid } = req.query;
+
+  try {
+    const listMovies = await moviesService.getWatchMovies(Number(userid));
+    return res.status(httpStatus.OK).send(listMovies.reverse());
+  } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .send({ msg: "Erro interno no servidor" });

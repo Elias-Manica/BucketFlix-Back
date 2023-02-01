@@ -631,7 +631,7 @@ describe("DELETE /add-movie/watched", () => {
   });
 
   describe("When token is valid", () => {
-    it("should respond with status 400 when watchedid dont send by user", async () => {
+    it("should respond with status 400 when movieid dont send by user", async () => {
       const token = await generateValidToken();
 
       const response = await api
@@ -641,30 +641,14 @@ describe("DELETE /add-movie/watched", () => {
       expect(response.status).toBe(httpStatus.BAD_REQUEST);
     });
 
-    it("should respond with status 404 when watchedid dont EXIST", async () => {
+    it("should respond with status 404 when movieid dont EXIST", async () => {
       const token = await generateValidToken();
 
       const response = await api
-        .delete("/add-movie/watched?watchedid=0")
+        .delete("/add-movie/watched?movieid=0")
         .set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.NOT_FOUND);
-    });
-
-    it("should respond with status 401 when user doesnt is the owener of watchedid", async () => {
-      const user = await createUser();
-
-      const unauthorizedUser = await createUser();
-
-      const token = await generateValidToken(unauthorizedUser);
-
-      const watched = await watchedAmovie(550, user.id, 5);
-
-      const response = await api
-        .delete(`/add-movie/watched?watchedid=${watched.id}`)
-        .set("Authorization", `Bearer ${token}`);
-
-      expect(response.status).toBe(httpStatus.UNAUTHORIZED);
     });
 
     it("should respond with status 200 and remove movie liked from db", async () => {
@@ -675,7 +659,7 @@ describe("DELETE /add-movie/watched", () => {
       const watched = await watchedAmovie(550, user.id, 5);
 
       const response = await api
-        .delete(`/add-movie/watched?watchedid=${watched.id}`)
+        .delete(`/add-movie/watched?movieid=550`)
         .set("Authorization", `Bearer ${token}`);
 
       const haslike = await findeWatchedMovie(watched.id);

@@ -14,7 +14,7 @@ async function getProfile(userid: number) {
     pictureUrl: response.pictureUrl,
     createdat: response.createdat,
     updatedat: response.updatedat,
-    listmovies: response.listmovies,
+    listmovies: response.listmovies.reverse(),
   };
 
   return body;
@@ -64,12 +64,47 @@ async function isfollow(ownuserId: number, userid: number) {
   return isFollowing;
 }
 
+async function getFollowing(userid: number) {
+  const list = await profileRepository.list(userid);
+
+  return list;
+}
+
+async function getFollowers(userid: number) {
+  const list = await profileRepository.listFollowers(userid);
+
+  return list;
+}
+
+async function getCountFollow(userid: number) {
+  const list = await profileRepository.following(userid);
+
+  return list;
+}
+
+async function getCountFollowers(userid: number) {
+  const list = await profileRepository.followerds(userid);
+
+  return list;
+}
+
+async function getCountComment(userid: number) {
+  const list = await profileRepository.comment(userid);
+
+  return list;
+}
+
 const profileService = {
   getProfile,
   getProfileByName,
   follow,
   unfollow,
   isfollow,
+  getFollowing,
+  getCountFollow,
+  getCountComment,
+  getCountFollowers,
+  getFollowers,
 };
 
 export default profileService;

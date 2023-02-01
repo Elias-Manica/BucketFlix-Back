@@ -61,6 +61,26 @@ export async function getComment(req: Request, res: Response) {
   }
 }
 
+export async function listComments(req: Request, res: Response) {
+  const { userid } = req.query;
+
+  if (!userid) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .send({ msg: "Parâmetro userid não enviado" });
+  }
+
+  try {
+    const list = await commentService.getCommentsByUser(Number(userid));
+
+    return res.status(httpStatus.OK).send(list);
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
+
 export async function deleteComment(req: Request, res: Response) {
   const { commentid } = req.query;
   const userId = res.locals.userid;

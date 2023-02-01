@@ -43,11 +43,24 @@ async function deleteEspecifyComment(commentid: number) {
   });
 }
 
+async function list(userid: number) {
+  return prisma.comments.findMany({
+    where: {
+      userid,
+    },
+    include: {
+      movies: true,
+      users: true,
+    },
+  });
+}
+
 const commentRepository = {
   addComment,
   getComments,
   getEspecifyComment,
   deleteEspecifyComment,
+  list,
 };
 
 export default commentRepository;
