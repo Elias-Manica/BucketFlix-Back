@@ -14,7 +14,7 @@ async function getProfile(userid: number) {
     pictureUrl: response.pictureUrl,
     createdat: response.createdat,
     updatedat: response.updatedat,
-    listmovies: response.listmovies,
+    listmovies: response.listmovies.reverse(),
   };
 
   return body;

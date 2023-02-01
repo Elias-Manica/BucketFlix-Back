@@ -214,7 +214,7 @@ export async function getWatchedMovies(req: Request, res: Response) {
 
   try {
     const listMovies = await moviesService.getWatchMovies(Number(userid));
-    return res.status(httpStatus.OK).send(listMovies);
+    return res.status(httpStatus.OK).send(listMovies.reverse());
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)

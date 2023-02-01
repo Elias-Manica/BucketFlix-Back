@@ -68,10 +68,17 @@ async function hasMovie(movieid: number) {
   }
 }
 
+async function getCommentsByUser(userid: number) {
+  const list = await commentRepository.list(userid);
+
+  return list;
+}
+
 const commentService = {
   addComment,
   getComments,
   deleteComment,
+  getCommentsByUser,
 };
 
 export default commentService;
