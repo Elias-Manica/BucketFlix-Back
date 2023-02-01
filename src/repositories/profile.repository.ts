@@ -55,12 +55,51 @@ async function isFollow(ownuserId: number, userid: number) {
   });
 }
 
+async function list(userid: number) {
+  return prisma.following.findMany({
+    where: {
+      userid,
+    },
+    include: {
+      usersFollow: true,
+    },
+  });
+}
+
+async function following(userid: number) {
+  return prisma.following.count({
+    where: {
+      userid,
+    },
+  });
+}
+
+async function followerds(userid: number) {
+  return prisma.following.count({
+    where: {
+      userFollowed: userid,
+    },
+  });
+}
+
+async function comment(userid: number) {
+  return prisma.comments.count({
+    where: {
+      userid,
+    },
+  });
+}
+
 const profileRepository = {
   get,
   getUserByName,
   followUser,
   isFollow,
   unfollowUser,
+  list,
+  following,
+  comment,
+  followerds,
 };
 
 export default profileRepository;

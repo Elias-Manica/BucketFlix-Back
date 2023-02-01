@@ -64,12 +64,40 @@ async function isfollow(ownuserId: number, userid: number) {
   return isFollowing;
 }
 
+async function getFollowing(userid: number) {
+  const list = await profileRepository.list(userid);
+
+  return list;
+}
+
+async function getCountFollow(userid: number) {
+  const list = await profileRepository.following(userid);
+
+  return list;
+}
+
+async function getCountFollowers(userid: number) {
+  const list = await profileRepository.followerds(userid);
+
+  return list;
+}
+
+async function getCountComment(userid: number) {
+  const list = await profileRepository.comment(userid);
+
+  return list;
+}
+
 const profileService = {
   getProfile,
   getProfileByName,
   follow,
   unfollow,
   isfollow,
+  getFollowing,
+  getCountFollow,
+  getCountComment,
+  getCountFollowers,
 };
 
 export default profileService;
