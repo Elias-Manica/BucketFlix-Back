@@ -176,6 +176,26 @@ export async function listFollow(req: Request, res: Response) {
   }
 }
 
+export async function listFollowed(req: Request, res: Response) {
+  const { userid } = req.query;
+
+  if (!userid) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .send({ msg: "Parâmetro userid não enviado" });
+  }
+
+  try {
+    const list = await profileService.getFollowers(Number(userid));
+
+    return res.status(httpStatus.OK).send(list);
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
+
 export async function getInfosProfile(req: Request, res: Response) {
   const { userid } = req.query;
 

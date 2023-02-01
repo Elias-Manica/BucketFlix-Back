@@ -66,6 +66,17 @@ async function list(userid: number) {
   });
 }
 
+async function listFollowers(userid: number) {
+  return prisma.following.findMany({
+    where: {
+      userFollowed: userid,
+    },
+    include: {
+      users: true,
+    },
+  });
+}
+
 async function following(userid: number) {
   return prisma.following.count({
     where: {
@@ -100,6 +111,7 @@ const profileRepository = {
   following,
   comment,
   followerds,
+  listFollowers,
 };
 
 export default profileRepository;

@@ -70,6 +70,12 @@ async function getFollowing(userid: number) {
   return list;
 }
 
+async function getFollowers(userid: number) {
+  const list = await profileRepository.listFollowers(userid);
+
+  return list;
+}
+
 async function getCountFollow(userid: number) {
   const list = await profileRepository.following(userid);
 
@@ -98,6 +104,7 @@ const profileService = {
   getCountFollow,
   getCountComment,
   getCountFollowers,
+  getFollowers,
 };
 
 export default profileService;
