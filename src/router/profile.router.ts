@@ -4,6 +4,7 @@ import {
   followUser,
   getInfosProfile,
   getMovieProfile,
+  getMovieWatchProfile,
   getProfile,
   getProfileByName,
   isfollowUser,
@@ -18,6 +19,7 @@ const profileRouter = Router();
 profileRouter
   .get("/", getProfile)
   .get("/movies", getMovieProfile)
+  .get("/movies/watch", getMovieWatchProfile)
   .get("/name", getProfileByName)
   .post("/follow", tokenIsValid, followUser)
   .delete("/follow", tokenIsValid, unfollowUser)

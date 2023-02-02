@@ -62,7 +62,7 @@ export async function getComment(req: Request, res: Response) {
 }
 
 export async function listComments(req: Request, res: Response) {
-  const { userid } = req.query;
+  const { userid, page } = req.query;
 
   if (!userid) {
     return res
@@ -71,7 +71,16 @@ export async function listComments(req: Request, res: Response) {
   }
 
   try {
-    const list = await commentService.getCommentsByUser(Number(userid));
+    if (!page) {
+      const profile = await commentService.getCommentsByUser(Number(userid), 1);
+
+      return res.status(httpStatus.OK).send(profile);
+    }
+
+    const list = await commentService.getCommentsByUser(
+      Number(userid),
+      Number(page)
+    );
 
     return res.status(httpStatus.OK).send(list);
   } catch (error) {

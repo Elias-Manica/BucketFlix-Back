@@ -41,6 +41,29 @@ async function getWithPagination(userid: number, page: number) {
   });
 }
 
+async function getWithPaginationWatch(userid: number, page: number) {
+  return prisma.users.findMany({
+    where: {
+      id: userid,
+    },
+    include: {
+      watchedMovies: {
+        skip: page,
+        take: 10,
+        where: {
+          userid: userid,
+        },
+        include: {
+          movie: true,
+        },
+        orderBy: {
+          id: "desc",
+        },
+      },
+    },
+  });
+}
+
 async function getUserByName(username: string) {
   return prisma.users.findMany({
     take: 5,
@@ -136,6 +159,7 @@ const profileRepository = {
   followerds,
   listFollowers,
   getWithPagination,
+  getWithPaginationWatch,
 };
 
 export default profileRepository;

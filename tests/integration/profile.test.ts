@@ -13,7 +13,7 @@ import {
   findFollow,
 } from "../factories/user.factory";
 import { generateValidToken } from "../factories/session.factory";
-import { favoritedAmovie } from "../factories/movies.factory";
+import { favoritedAmovie, watchedAmovie } from "../factories/movies.factory";
 
 const api = supertest(server);
 
@@ -432,6 +432,177 @@ describe("GET /user/follow", () => {
 
       expect(response.status).toBe(httpStatus.OK);
       expect(isFollow).toBeTruthy();
+    });
+  });
+});
+
+describe("GET /user/movies", () => {
+  describe("When token is valid", () => {
+    it("should respond with status 400 when userid dont send by user", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .get("/user/movies")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 200 and a empty array when userid dont have a list of movies", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .get(`/user/movies?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual({
+        id: user.id,
+        username: user.username,
+        pictureUrl: user.pictureUrl,
+        createdat: user.createdat.toISOString(),
+        updatedat: user.updatedat.toISOString(),
+        listmovies: [],
+      });
+    });
+
+    it("should respond with status 200 and a array with movies of the user", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const generateValidBody = () => ({
+        movieid: 550,
+      });
+
+      const body = generateValidBody();
+
+      await api
+        .post("/add-movie")
+        .send(body)
+        .set("Authorization", `Bearer ${token}`);
+      const movie = await favoritedAmovie(550, user.id);
+
+      const response = await api
+        .get(`/user/movies?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual({
+        id: user.id,
+        username: user.username,
+        pictureUrl: user.pictureUrl,
+        createdat: user.createdat.toISOString(),
+        updatedat: user.updatedat.toISOString(),
+        listmovies: [
+          {
+            id: movie.id,
+            userid: movie.userid,
+            movieid: movie.movieid,
+            createdat: movie.createdat.toISOString(),
+            updatedat: movie.updatedat.toISOString(),
+            movies: {
+              id: movie.movies.id,
+              movieid: movie.movies.movieid,
+              original_title: movie.movies.original_title,
+              title: movie.movies.title,
+              overview: movie.movies.overview,
+              poster_path: movie.movies.poster_path,
+              tagline: movie.movies.tagline,
+              popularity: movie.movies.popularity,
+              release_date: movie.movies.release_date,
+            },
+          },
+        ],
+      });
+    });
+  });
+});
+
+describe("GET /user/movies/watch", () => {
+  describe("When token is valid", () => {
+    it("should respond with status 400 when userid dont send by user", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .get("/user/movies/watch")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 200 and a empty array when userid dont have a list of movies", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .get(`/user/movies/watch?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual({
+        id: user.id,
+        username: user.username,
+        pictureUrl: user.pictureUrl,
+        createdat: user.createdat.toISOString(),
+        updatedat: user.updatedat.toISOString(),
+        listmovies: [],
+      });
+    });
+
+    it("should respond with status 200 and a array with movies of the user", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const generateValidBody = () => ({
+        movieid: 550,
+      });
+
+      const body = generateValidBody();
+
+      await api
+        .post("/add-movie")
+        .send(body)
+        .set("Authorization", `Bearer ${token}`);
+      const watched = await watchedAmovie(550, user.id, 5);
+
+      const response = await api
+        .get(`/user/movies/watch?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual({
+        id: user.id,
+        username: user.username,
+        pictureUrl: user.pictureUrl,
+        createdat: user.createdat.toISOString(),
+        updatedat: user.updatedat.toISOString(),
+        listmovies: [
+          {
+            id: watched.id,
+            userid: watched.userid,
+            movieid: watched.movieid,
+            rating: watched.rating,
+            createdat: watched.createdat.toISOString(),
+            updatedat: watched.updatedat.toISOString(),
+            movie: {
+              id: watched.movie.id,
+              movieid: watched.movie.movieid,
+              original_title: watched.movie.original_title,
+              title: watched.movie.title,
+              overview: watched.movie.overview,
+              poster_path: watched.movie.poster_path,
+              tagline: watched.movie.tagline,
+              popularity: watched.movie.popularity,
+              release_date: watched.movie.release_date,
+            },
+          },
+        ],
+      });
     });
   });
 });

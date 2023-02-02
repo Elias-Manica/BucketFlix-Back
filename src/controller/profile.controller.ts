@@ -65,6 +65,38 @@ export async function getMovieProfile(req: Request, res: Response) {
   }
 }
 
+export async function getMovieWatchProfile(req: Request, res: Response) {
+  const { userid, page } = req.query;
+
+  if (!userid) {
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .send({ msg: "Parâmetro userid não enviado" });
+  }
+
+  try {
+    if (!page) {
+      const profile = await profileService.getProfileWatchWithPagination(
+        Number(userid),
+        1
+      );
+
+      return res.status(httpStatus.OK).send(profile);
+    }
+
+    const response = await profileService.getProfileWatchWithPagination(
+      Number(userid),
+      Number(page)
+    );
+
+    return res.status(httpStatus.OK).send(response);
+  } catch (error) {
+    return res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ msg: "Erro interno no servidor" });
+  }
+}
+
 export async function getProfileByName(req: Request, res: Response) {
   const { username } = req.query;
 

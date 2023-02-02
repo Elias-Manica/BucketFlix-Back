@@ -41,6 +41,32 @@ async function getProfileWithPagination(userid: number, page: number) {
   return body;
 }
 
+async function getProfileWatchWithPagination(userid: number, page: number) {
+  const getNumber = (Number(page) - 1) * 10;
+
+  const response = await profileRepository.getWithPaginationWatch(
+    userid,
+    getNumber
+  );
+
+  if (!response) {
+    throw httpStatus.NOT_FOUND;
+  }
+
+  const body = {
+    id: response[0].id,
+    username: response[0].username,
+    pictureUrl: response[0].pictureUrl,
+    createdat: response[0].createdat,
+    updatedat: response[0].updatedat,
+    listmovies: response[0].watchedMovies,
+  };
+
+  console.log(body);
+
+  return body;
+}
+
 async function getProfileByName(username: string) {
   const response = await profileRepository.getUserByName(username);
 
@@ -127,6 +153,7 @@ const profileService = {
   getCountFollowers,
   getFollowers,
   getProfileWithPagination,
+  getProfileWatchWithPagination,
 };
 
 export default profileService;
