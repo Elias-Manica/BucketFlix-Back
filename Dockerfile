@@ -1,5 +1,5 @@
 FROM node:15
-##teste
+
 WORKDIR /usr/src
 
 COPY package.json .
