@@ -68,8 +68,10 @@ async function hasMovie(movieid: number) {
   }
 }
 
-async function getCommentsByUser(userid: number) {
-  const list = await commentRepository.list(userid);
+async function getCommentsByUser(userid: number, page: number) {
+  const getNumber = (Number(page) - 1) * 10;
+
+  const list = await commentRepository.list(userid, getNumber);
 
   return list;
 }

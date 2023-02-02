@@ -202,7 +202,67 @@ describe("GET /comments", () => {
         .get("/comments?movieid=550")
         .set("Authorization", `Bearer ${token}`);
 
-      console.log(response.body);
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(Number),
+            userid: user.id,
+            movieid: 550,
+            comment: comment.comment,
+            rating: comment.rating,
+            createdat: comment.createdat.toISOString(),
+            updatedat: comment.updatedat.toISOString(),
+            users: {
+              id: user.id,
+              email: user.email,
+              username: user.username,
+              pictureUrl: user.pictureUrl,
+              createdat: user.createdat.toISOString(),
+              updatedat: user.updatedat.toISOString(),
+            },
+          }),
+        ])
+      );
+    });
+  });
+});
+
+describe("GET /comments/users/users", () => {
+  describe("When token is valid", () => {
+    it("should respond with status 400 when userid dont send by user", async () => {
+      const token = await generateValidToken();
+
+      const response = await api
+        .get("/comments/users")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    it("should respond with status 200 and a empty array when userid dont have a comments", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const response = await api
+        .get(`/comments/users?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual([]);
+    });
+
+    it("should respond with status 200 and a array with comments of the user", async () => {
+      const user = await createUser();
+
+      const token = await generateValidToken(user);
+
+      const comment = await commentMovie(550, user.id);
+
+      const response = await api
+        .get(`/comments/users?userid=${user.id}`)
+        .set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual(
@@ -215,6 +275,17 @@ describe("GET /comments", () => {
             rating: comment.rating,
             createdat: comment.createdat.toISOString(),
             updatedat: comment.updatedat.toISOString(),
+            movies: {
+              id: comment.movies.id,
+              movieid: comment.movies.movieid,
+              original_title: comment.movies.original_title,
+              title: comment.movies.title,
+              overview: comment.movies.overview,
+              poster_path: comment.movies.poster_path,
+              tagline: comment.movies.tagline,
+              popularity: comment.movies.popularity,
+              release_date: comment.movies.release_date,
+            },
             users: {
               id: user.id,
               email: user.email,

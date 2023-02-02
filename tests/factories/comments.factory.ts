@@ -10,6 +10,9 @@ export async function commentMovie(movieid: number, userid: number) {
       comment: faker.lorem.word(),
       rating: 5,
     },
+    include: {
+      movies: true,
+    },
   });
 }
 

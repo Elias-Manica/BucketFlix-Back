@@ -43,14 +43,19 @@ async function deleteEspecifyComment(commentid: number) {
   });
 }
 
-async function list(userid: number) {
+async function list(userid: number, page: number) {
   return prisma.comments.findMany({
+    skip: page,
+    take: 10,
     where: {
       userid,
     },
     include: {
       movies: true,
       users: true,
+    },
+    orderBy: {
+      id: "desc",
     },
   });
 }
